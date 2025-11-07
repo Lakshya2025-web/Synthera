@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import {useRouter} from "next/navigation";
+import { fetchAuthSession, signOut } from "aws-amplify/auth";
 import {
   FiPlus,
   FiBook,
@@ -14,10 +16,14 @@ import {
 } from "react-icons/fi";
 
 export default function ChatPage() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [darkMode, setDarkMode] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/");
+  };
   const toggleTheme = () => setDarkMode(!darkMode);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -54,6 +60,9 @@ export default function ChatPage() {
           <button onClick={toggleTheme} className="text-xl">
             {darkMode ? <FiSun /> : <FiMoon />}
           </button>
+          <button onClick={handleLogout} className="text-xs bg-purple-600 px-2 py-1 rounded hover:bg-purple-700 transition">
+          Sign Out
+        </button>
         </div>
 
         <h2 className="text-2xl font-semibold mb-6">What can I help with?</h2>
