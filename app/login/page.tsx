@@ -1,25 +1,24 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn, fetchAuthSession } from "aws-amplify/auth";
 import { useRouter } from "next/navigation";
-
 export default function LoginPage() {
   const router = useRouter();
-  const [showLogin, setShowLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [animateIn, setAnimateIn] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimateIn(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
   const handleLogin = async () => {
     try {
       setLoading(true);
       await signIn({ username: email, password });
       const session = await fetchAuthSession();
       const token = session.tokens?.idToken?.toString();
-
       if (token) localStorage.setItem("cognito_token", token);
-
       alert("✅ Login successful!");
       router.push("/dashboard");
     } catch (err: any) {
@@ -34,24 +33,10 @@ export default function LoginPage() {
       className="min-h-screen bg-cover bg-center text-white px-4 relative"
       style={{ backgroundImage: "url('/background-image.jpg')" }}
     >
-      {/* Left-aligned container */}
       <div className="absolute top-1/2 left-10 transform -translate-y-1/2 flex flex-row gap-6 items-start">
-        {/* Dark Gradient Login Button with Reversed Direction */}
-        {!showLogin && (
-                <button
-        onClick={() => setShowLogin(true)}
-        className="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#0a0f2c] via-[#102a5c] to-[#1a3b7c] 
-                    shadow-lg border border-white/10 backdrop-blur-md transition-all duration-300 
-                    hover:scale-105 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(26,59,124,0.6)] hover:brightness-110"
-        >
-        Login
-        </button>
-        )}
-
-        {/* Animated Login Form */}
         <div
-          className={`transition-all duration-500 ease-out ${
-            showLogin ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+          className={`transition-all duration-700 ease-out ${
+            animateIn ? "opacity-100 scale-100" : "opacity-0 scale-95"
           } w-full max-w-md`}
         >
           <div className="bg-gray-800/70 backdrop-blur-md p-8 rounded-xl shadow-2xl border border-gray-700 text-white transition-transform duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(255,255,255,0.3)]">

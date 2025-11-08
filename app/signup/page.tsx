@@ -1,18 +1,19 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signUp, confirmSignUp } from "aws-amplify/auth";
-
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"signup" | "confirm">("signup");
-  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [animateIn, setAnimateIn] = useState(false);
   const router = useRouter();
-
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimateIn(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
   const handleSignup = async () => {
     try {
       setLoading(true);
@@ -28,7 +29,6 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
-
   const handleConfirm = async () => {
     try {
       setLoading(true);
@@ -41,35 +41,19 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
-
   return (
     <div
       className="min-h-screen bg-cover bg-center text-white px-4 relative"
       style={{ backgroundImage: "url('/background-image.jpg')" }}
     >
-      {/* Left-aligned container */}
       <div className="absolute top-1/2 left-10 transform -translate-y-1/2 flex gap-6 items-start">
-        {/* Trigger Button */}
-        {!showForm && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#0a0f2c] via-[#102a5c] to-[#1a3b7c] 
-                       shadow-lg border border-white/10 backdrop-blur-md transition-all duration-300 
-                       hover:scale-105 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(26,59,124,0.6)] hover:brightness-110"
-          >
-            Sign Up
-          </button>
-        )}
-
-        {/* Pop-Up Signup Form */}
         <div
-          className={`transition-all duration-500 ease-out ${
-            showForm ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+          className={`transition-all duration-700 ease-out ${
+            animateIn ? "opacity-100 scale-100" : "opacity-0 scale-95"
           } w-full max-w-md`}
         >
           <div className="bg-gray-800/70 backdrop-blur-md p-8 rounded-xl shadow-2xl border border-gray-700 text-white transition-transform duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(255,255,255,0.3)]">
             <h2 className="text-3xl font-bold text-center mb-6 tracking-wide">Create Account</h2>
-
             {step === "signup" && (
               <>
                 <input
@@ -89,15 +73,14 @@ export default function SignupPage() {
                 <button
                   onClick={handleSignup}
                   disabled={loading}
-                  className={`w-full py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-[#0a0f2c] via-[#102a5c] to-[#1a3b7c] 
+                  className={`w-full py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 
                               shadow-lg border border-white/10 backdrop-blur-md transition-all duration-300 
-                              ${loading ? "cursor-not-allowed opacity-60" : "hover:scale-105 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(26,59,124,0.6)] hover:brightness-110"}`}
+                              ${loading ? "cursor-not-allowed opacity-60" : "hover:scale-105 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] hover:brightness-110"}`}
                 >
                   {loading ? "Signing Up..." : "Sign Up"}
                 </button>
               </>
             )}
-
             {step === "confirm" && (
               <>
                 <p className="text-sm mb-4 text-center">
